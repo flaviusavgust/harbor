@@ -1,0 +1,27 @@
+---
+# https://yamllint.readthedocs.io/en/stable/configuration.html
+
+ignore: |
+  .idea/
+  .venv/
+  __pycache__/
+  templates/harbor.yml
+
+extends: default
+
+rules:
+  braces:
+    max-spaces-inside: 1
+    level: error
+
+  brackets:
+    max-spaces-inside: 1
+    level: error
+
+  line-length:
+    max: 160
+
+  document-start:
+    present: true
+
+  truthy: disable

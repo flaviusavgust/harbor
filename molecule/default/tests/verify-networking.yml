@@ -1,0 +1,39 @@
+---
+- name: Setting tests variables
+  ansible.builtin.set_fact:
+    ports_to_check:  # Commented in the repository creation to avoid test errors until the role is finished
+      - protocol: tcp
+        address: 0.0.0.0
+        port: 443
+      - protocol: tcp
+        address: 0.0.0.0
+        port: 80
+      - protocol: tcp
+        address: 0.0.0.0
+        port: 9090
+      - protocol: tcp
+        address: 127.0.0.1
+        port: 1514
+
+- name: Getting information about listening ports
+  become: yes
+  community.general.listen_ports_facts:
+
+- name: Debugging open ports
+  ansible.builtin.debug:
+    msg: "{{ ansible_facts.tcp_listen + ansible_facts.udp_listen }}"
+    verbosity: 1
+
+- name: Checking required open ports
+  ansible.builtin.assert:
+    that:
+      - "{{ (ansible_facts.tcp_listen + ansible_facts.udp_listen)
+      | selectattr('protocol', 'equalto', item.protocol)
+      | selectattr('address', 'equalto', item.address)
+      | selectattr('port', 'equalto', item.port)
+      | list
+      | length == 1 }}"
+    quiet: yes
+  loop: "{{ ports_to_check }}"
+  loop_control:
+    label: "{{ item.protocol + '://' + item.address + ':' + item.port|string }}"

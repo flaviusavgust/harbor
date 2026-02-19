@@ -1,0 +1,37 @@
+---
+- name: Creating target directory
+  become: yes
+  ansible.builtin.file:
+    path: "{{ harbor_registry_install_path }}"
+    state: directory
+    recurse: yes
+
+- name: Downloading Harbor installer file
+  become: yes
+  ansible.builtin.get_url:
+    url: "{{ harbor_registry_releases_url }}/v{{ harbor_registry_version }}/harbor-online-installer-v{{ harbor_registry_version }}.tgz"
+    dest: "{{ harbor_registry_install_path }}"
+  notify:
+    - Executing Harbor installer script
+
+- name: Uncompressing Harbor installer
+  become: yes
+  ansible.builtin.unarchive:
+    src: "{{ harbor_registry_install_path }}/harbor-online-installer-v{{ harbor_registry_version }}.tgz"
+    dest: "{{ harbor_registry_install_path }}"
+    remote_src: yes
+  changed_when: false
+  notify:
+    - Executing Harbor installer script
+
+- name: Copying configuration file
+  become: yes
+  ansible.builtin.template:
+    src: "harbor.yml"
+    dest: "{{ harbor_registry_install_path }}/harbor"
+    mode: "0550"
+  notify:
+    - Executing Harbor installer script
+
+- name: "Flushing handlers to execute the installation script"
+  meta: flush_handlers

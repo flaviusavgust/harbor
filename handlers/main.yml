@@ -1,0 +1,13 @@
+---
+- name: Executing Harbor installer script
+  become: yes
+  ansible.builtin.command:
+    cmd: "{{ harbor_registry_install_path }}/harbor/install.sh"
+  register: cmd_output
+  notify:
+    - Debugging installation process
+
+- name: Debugging installation process
+  ansible.builtin.debug:
+    msg: "{{ cmd_output }}"
+    verbosity: 1

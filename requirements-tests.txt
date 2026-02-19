@@ -1,0 +1,5 @@
+molecule~=3.4
+molecule-docker~=0.2
+docker~=5.0
+yamllint~=1.26
+ansible-lint~=5.1

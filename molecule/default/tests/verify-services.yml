@@ -1,0 +1,30 @@
+---
+- name: Setting tests variables
+  ansible.builtin.set_fact:
+    services_to_check:  # Commented in the repository creation to avoid test errors until the role is finished
+      - name: docker.service
+        source: systemd
+        state: running
+        status: enabled
+
+- name: Getting information about services
+  become: yes
+  ansible.builtin.service_facts:
+
+- name: Debugging services
+  ansible.builtin.debug:
+    msg: "{{ ansible_facts.services }}"
+    verbosity: 1
+
+- name: Checking services
+  ansible.builtin.assert:
+    that:
+      - "{{ item.name in ansible_facts.services }}"
+      - "{{ ansible_facts.services[item.name].name == item.name }}"
+      - "{{ ansible_facts.services[item.name].source == item.source }}"
+      - "{{ ansible_facts.services[item.name].state == item.state }}"
+      - "{{ ansible_facts.services[item.name].status == item.status }}"
+    quiet: yes
+  loop: "{{ services_to_check }}"
+  loop_control:
+    label: "{{ item.name }}"

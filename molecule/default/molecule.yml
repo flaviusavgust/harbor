@@ -1,0 +1,47 @@
+---
+scenario:
+  name: default
+
+dependency:
+  name: galaxy
+  options:
+    role-file: requirements-roles.yml
+
+driver:
+  name: docker
+
+platforms:
+  # vandalsWeb Debian image (based on Debian 10 - Buster)
+  # https://code.vandalsweb.com/vandalsweb/builder-container-debian-stable
+  - name: "molecule-harbor-registry-debian-buster"
+    image: code.vandalsweb.com:5005/vandalsweb/builder-container-debian-stable/debian-buster:latest
+    pre_build_image: true
+    groups: [ provision_images ]
+    privileged: true
+    network_mode: bridge
+    networks:
+      - name: "molecule-harbor-registry"
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+
+provisioner:
+  name: ansible
+  log: true
+  ansible_args:
+    - --limit=provision_images
+  options:
+    vvv: false
+  env:
+    MOLECULE_DEBUG: false
+
+lint: |
+  set -e
+  yamllint --strict -c .yamllint .
+  ansible-lint -c .ansible-lint
+
+verifier:
+  name: ansible
+  enabled: true

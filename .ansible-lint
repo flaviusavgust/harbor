@@ -1,0 +1,6 @@
+---
+# https://ansible-lint.readthedocs.io/en/latest/configuring.html
+
+verbosity: 0
+parseable: false
+quiet: false

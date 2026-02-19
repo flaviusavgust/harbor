@@ -1,0 +1,16 @@
+---
+- name: Converge
+  hosts: all
+
+  vars:
+    # https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+    ansible_python_interpreter: "/usr/bin/python3"
+
+    harbor_registry_domain: registry.vandalsweb.com
+    harbor_registry_sslcert_crt_path: /etc/ssl/certs/registry.vandalsweb.com.crt
+    harbor_registry_sslcert_privkey_path: /etc/ssl/private/registry.vandalsweb.com.key
+
+  tasks:
+    - name: "Include role"
+      include_role:
+        name: "harbor_registry"

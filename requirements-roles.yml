@@ -1,0 +1,12 @@
+---
+# Docker
+- src: https://code.vandalsweb.com/ansible-roles/docker
+  scm: git
+  version: origin/master
+  name: docker
+
+# SSL certs
+- src: https://code.vandalsweb.com/ansible-roles/sslcerts
+  scm: git
+  version: origin/master
+  name: sslcerts

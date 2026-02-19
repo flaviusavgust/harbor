@@ -1,0 +1,69 @@
+---
+style: gitlab
+# template: CHANGELOG-gitlab.tpl.md
+template: CHANGELOG.tpl.md
+
+info:
+  title: CHANGELOG
+  repository_url: "https://code.vandalsweb.com/ansible-roles/harbor_registry"
+
+options:
+  commits:
+    filters:
+      # https://www.conventionalcommits.org/
+      # https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines
+      Type:
+        - build
+        - ci
+        - docs
+        - feat
+        - fix
+        - perf
+        - refactor
+        - style
+        - tests
+    sort_by: Scope
+
+  commit_groups:
+    group_by: Type
+    sort_by: Title
+    title_maps:
+      build: Building
+      ci: CI/CD
+      docs: Documentation
+      feat: Features
+      fix: Bug Fixes
+      perf: Performance
+      refactor: Refactoring
+      style: Style
+      tests: Tests
+
+  header:
+    pattern: "^(\\w*)(?:\\(([\\w\\$\\.\\-\\*\\s]*)\\))?\\:\\s(.*)$"
+    pattern_maps:
+      - Type
+      - Scope
+      - Subject
+
+  issues:
+    prefix:
+      - "#"
+
+  refs:
+    actions:
+      - Closes
+      - Fixes
+
+  merges:
+    pattern: "^Merge branch '(\\w+)'$"
+    pattern_maps:
+      - Source
+
+  reverts:
+    pattern: "^Revert \"([\\s\\S]*)\"$"
+    pattern_maps:
+      - Header
+
+  notes:
+    keywords:
+      - BREAKING CHANGE

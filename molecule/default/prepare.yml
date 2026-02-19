@@ -1,0 +1,39 @@
+---
+- name: Prepare
+  hosts: all
+
+  vars:
+    # https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+    ansible_python_interpreter: "/usr/bin/python3"
+
+    sslcerts_domain_main: registry.vandalsweb.com
+    sslcerts_email: admin@vandalsweb.com
+    sslcerts_provider: openssl
+
+    roles_to_run:  # Required roles defined in file requirements-roles.yml
+      - "sslcerts"
+      - "docker"
+
+  tasks:
+    - name: Installing required packages for tests
+      become: yes
+      ansible.builtin.package:
+        name: []
+        state: present
+        update_cache: yes
+
+    # Required due a bug: https://github.com/docker/compose/issues/1339
+    # Needed to run the downloaded Harbor file, and needed to run docker-compose command.
+    - name: Remounting /tmp partition allowing execution of binary files
+      become: yes
+      ansible.posix.mount:
+        path: /tmp
+        state: remounted
+        opts: exec
+
+    - name: Include role
+      include_role:
+        name: "{{ role_to_run }}"
+      loop: "{{ roles_to_run }}"
+      loop_control:
+        loop_var: role_to_run

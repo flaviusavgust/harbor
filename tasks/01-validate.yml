@@ -1,0 +1,62 @@
+---
+- name: Checking server OS
+  ansible.builtin.assert:
+    that:
+      - ansible_distribution in harbor_registry_supported_distributions
+    msg: "The server OS is not supported: {{ ansible_distribution }}"
+    quiet: yes
+
+- name: Checking required variables
+  run_once: true
+  delegate_to: localhost
+  ansible.builtin.assert:
+    that:
+      - "harbor_registry_domain | default(false,true)"
+      - "harbor_registry_sslcert_crt_path | default(false,true)"
+      - "harbor_registry_sslcert_privkey_path | default(false,true)"
+    msg: "You have to configure some required variables! See README.md file."
+    quiet: yes
+
+- name: Checking if SSL certificates exists (part 1)
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  loop:
+    - "{{ harbor_registry_sslcert_crt_path }}"
+    - "{{ harbor_registry_sslcert_privkey_path }}"
+  register: ssl_stats
+
+- name: Checking if SSL certificates exists (part 2)
+  ansible.builtin.assert:
+    that:
+      - "item.stat.exists | default(false,true)"
+    msg: "SSL cert file doesn't exist! See README.md file."
+    quiet: yes
+  loop: "{{ ssl_stats.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+
+- name: Checking if Docker is installed (part 1)
+  become: yes
+  ansible.builtin.shell:
+    cmd: "command -v {{ item }} &> /dev/null"
+  register: docker_outputs
+  changed_when: false
+  loop:
+    - docker
+    - docker-compose
+
+- name: Debugging commands
+  ansible.builtin.debug:
+    msg: "{{ docker_outputs.results }}"
+    verbosity: 1
+
+- name: Checking if Docker is installed (part 2)
+  ansible.builtin.assert:
+    that:
+      - "{{ item.stdout != '' }}"
+    msg: "Required command {{ item.item }} doesn't exist! See README.md file."
+    quiet: yes
+  loop: "{{ docker_outputs.results }}"
+  loop_control:
+    extended: yes
+    label: "{{ item.item }}"

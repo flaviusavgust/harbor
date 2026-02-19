@@ -1,0 +1,15 @@
+---
+- name: "Validating parameters"
+  include_tasks: 01-validate.yml
+
+- name: "Configuring system"
+  include_tasks: 02-configure-system.yml
+
+- name: "Installing Harbor"
+  include_tasks: 03-install-harbor.yml
+
+- name: "Showing installation summary"
+  include_tasks: 04-summary.yml
+
+- name: "Flushing current role handlers before possible next role execution"
+  meta: flush_handlers

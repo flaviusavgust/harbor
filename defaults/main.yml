@@ -1,0 +1,42 @@
+---
+# https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+ansible_python_interpreter: "/usr/bin/python3"
+
+# General config
+harbor_registry_supported_distributions: [ 'Debian' ]
+harbor_registry_default_dist_codename: buster
+harbor_registry_template_header:
+  - "WARNING: This file is generated automatically with Ansible, do not edit directly!!"
+  - "https://code.vandalsweb.com/ansible-roles/harbor_registry"
+  - "---"
+
+# Install settings
+harbor_registry_releases_url: https://github.com/goharbor/harbor/releases/download
+harbor_registry_version: 2.3.1  # Check latest versions on https://github.com/goharbor/harbor/releases
+harbor_registry_install_path: /opt  # Set this parameter to /opt if you want Harbor Registry in /opt/harbor/
+
+# Main settings
+harbor_registry_domain: ""
+harbor_registry_http_port: 80
+harbor_registry_https_port: 443
+harbor_registry_initial_admin_password: ""  # Only for first time. If it's not specified, it's generated randomly
+
+# SSL settings
+harbor_registry_sslcert_crt_path:
+harbor_registry_sslcert_privkey_path:
+
+# Database settings
+harbor_registry_database_password: ""  # Password for the root user of the database. If it's not specified, it's generated randomly
+harbor_registry_database_max_idle_conns: 100
+harbor_registry_database_max_open_conns: 900
+
+# Storage settings
+harbor_registry_data_volume_path: /data
+
+# Metrics settings
+harbor_registry_metrics_enabled: true
+harbor_registry_metrics_port: 9090
+harbor_registry_metrics_path: /metrics
+
+# Misc
+test_env: "{{ 'molecule-' in ansible_hostname }}"

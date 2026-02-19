@@ -1,0 +1,16 @@
+---
+- name: Verify
+  hosts: all
+
+  vars:
+    # https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html
+    ansible_python_interpreter: "/usr/bin/python3"
+
+  tasks:
+    - name: Including tests
+      include_tasks: "{{ test_file }}"
+      loop_control:
+        loop_var: test_file
+      loop:
+        - tests/verify-networking.yml
+        - tests/verify-services.yml

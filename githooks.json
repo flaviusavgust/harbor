@@ -1,0 +1,12 @@
+{
+  "commit-msg": {
+    "https://code.vandalsweb.com/vandalsweb/git-hooks": [
+      "hooks/commit-msg/check-conventional-commits-message"
+    ]
+  },
+  "pre-push": {
+    "https://code.vandalsweb.com/vandalsweb/git-hooks": [
+      "hooks/pre-push/block-push-to-master-branch"
+    ]
+  }
+}

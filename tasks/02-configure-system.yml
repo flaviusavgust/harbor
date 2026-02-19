@@ -1,0 +1,32 @@
+---
+- name: Checking if exists a previous Harbor installation
+  stat:
+    path: "{{ harbor_registry_install_path }}/harbor/harbor.yml"
+  register: config_file
+
+- name: Reading previous Harbor configuration file (if exists)
+  become: yes
+  slurp:
+    src: "{{ harbor_registry_install_path }}/harbor/harbor.yml"
+  register: config_file_content
+  when:
+    - config_file.stat.exists is defined
+    - config_file.stat.exists
+
+- name: Reading initial admin password from previous Harbor configuration file (if exists)
+  set_fact:
+    final_admin_password: "{{ config_file_content['content'] | b64decode |
+      regex_findall('^harbor_admin_password: (.+)$', multiline=True) | join() }}"
+    final_database_password: "{{ config_file_content['content'] | b64decode |
+      regex_findall('^  password: (.+)$', multiline=True) | join() }}"
+  when:
+    - config_file.stat.exists is defined
+    - config_file.stat.exists
+
+- name: Generating random admin password for the first time (if not exists)
+  set_fact:
+    final_admin_password: "{{ harbor_registry_initial_admin_password | default(lookup('password', '/dev/null chars=ascii_lowercase,digits length=8'), true) }}"
+    final_database_password: "{{ harbor_registry_database_password | default(lookup('password', '/dev/null chars=ascii_lowercase,digits length=8'), true) }}"
+  when:
+    - config_file.stat.exists is defined
+    - not config_file.stat.exists

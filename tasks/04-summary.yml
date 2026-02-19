@@ -1,0 +1,7 @@
+---
+- name: "Showing installation summary"
+  debug:
+    msg:
+      - "> Installation of Harbor Registry {{ harbor_registry_version }} is complete!"
+      - "> You can access to your dashboard here: https://{{ harbor_registry_domain }}"
+      - "> Initial admin password (only valid for the first time): {{ final_admin_password }}"
